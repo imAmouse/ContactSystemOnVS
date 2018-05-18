@@ -1,3 +1,11 @@
+/*
+ *      c++ 课程设计
+ *       通讯录系统
+ *       start at 
+ *      2018-05-05
+ *       by 官文豪
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
