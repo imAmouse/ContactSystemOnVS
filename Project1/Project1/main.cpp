@@ -41,15 +41,20 @@ public:
 	void look_though(); //浏览全部
 	void transfer(bool j); //转存：False:phone to card True:card to phone
 	bool get_judge(int PhoneNum) { return contact[PhoneNum].get_judge(); }
-	void Read();
-	void Save();
+	virtual void Read();
+	virtual void Save();
 };
 book::book(bool weizhi) :weizhi(weizhi) {}
 void book::add_person() {
 	int num;
-	for (int i = 0; i < 1000; i++) {
-		if (!contact[i].get_judge())
-			num = i;
+	for (num = 0; num < 1000; num++) {
+		if (!contact[num].get_judge()) {
+			break;
+		}
+		else if (num = 999) {
+			cout << "此通讯录已满！\n";
+			return;
+		}
 	}
 	string temp;
 	bool judge;
@@ -81,6 +86,13 @@ void book::add_person() {
 	cout << "添加成功！\n";
 }
 void book::delete_person(string name) {
+	int num;
+	cin >> num;
+	contact[num].set_judge(false);
+	contact[num].set_name("");
+	contact[num].set_num_phone("");
+	contact[num].set_num_qq("");
+	contact[num].set_num_phone("");
 	cout << "删除成功！\n";
 }
 void book::revise_person(string name) {
@@ -88,7 +100,7 @@ void book::revise_person(string name) {
 	cout << "修改成功！\n";
 }
 void book::find_person(string name) {
-	for (int i = 0; i<1000; i++) {
+	for (int i = 0; i < 1000; i++) {
 		if (name == contact[i].get_name()) {
 
 			cout << contact[i].get_name() << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
@@ -101,12 +113,12 @@ void book::find_person(string name) {
 	}
 }
 void book::look_though() {
-	for (int i = 0; i<1000; i++)
+	for (int i = 0; i < 1000; i++)
 		if (contact[i].get_judge() == true) {
 			cout << contact[i].get_name() << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
 				<< contact[i].get_address();
 			if (!weizhi)
-				cout << "\t内部" << "\t" << i << "\n";
+				cout << "\t手机存储" << "\t" << i << "\n";
 			if (weizhi)
 				cout << "\t储存卡" << "\t" << i << "\n";
 		}
@@ -118,9 +130,8 @@ void book::Read() {
 	else if (weizhi)
 		str = "PhoneSdCard.ini";
 	fstream tooo(str.c_str(), ios::in);
-	for (int i = 0; tooo.peek() != EOF; i++) {
+	for (int i = 0; tooo >> a >> b >> c >> d; i++) {
 		if (!contact[i].get_judge()) {
-			tooo >> a >> b >> c >> d;
 			contact[i].set_name(a);
 			contact[i].set_num_phone(b);
 			contact[i].set_num_qq(c);
@@ -136,7 +147,7 @@ void book::Save() {
 	else if (weizhi)
 		str = "PhoneSdCard.ini";
 	fstream tooo(str.c_str(), ios::out);
-	for (int i = 0; i<1000; i++) {
+	for (int i = 0; i < 1000; i++) {
 		if (contact[i].get_judge()) {
 			tooo << contact[i].get_name() << " " << contact[i].get_num_phone() << " " << contact[i].get_num_qq()
 				<< " " << contact[i].get_address() << "\n";
