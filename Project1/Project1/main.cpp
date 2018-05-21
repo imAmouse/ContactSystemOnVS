@@ -1,7 +1,7 @@
 /*
  *      c++ 课程设计
  *       通讯录系统
- *       start at 
+ *       start at
  *      2018-05-05
  *       by 官文豪
 */
@@ -36,11 +36,11 @@ person::person() :judge(false) {}
 
 class book {
 private:
-	person contact[1000];//每个电话本最大容量为1000
 	bool weizhi; //false为电话内部，true为存储卡存储
 public:
-	book(bool weizhi);
-	bool get_weizhi() { return weizhi; }//返回值false为电话内部，true为存储卡存储
+	person contact[1000]; //每个电话本最大容量为1000
+	void set_weizhi(bool weizhi) { this->weizhi = weizhi; }
+	bool get_weizhi() { return weizhi; } //返回值false为电话内部，true为存储卡存储
 	void add_person();
 	void delete_person(string name); //传入要删除的编号
 	void revise_person(string name); //修改
@@ -48,17 +48,17 @@ public:
 	void look_though(); //浏览全部
 	void transfer(bool j); //转存：False:phone to card True:card to phone
 	bool get_judge(int PhoneNum) { return contact[PhoneNum].get_judge(); }
-	virtual void Read();
-	virtual void Save();
+	string GetFileName(); //获取文件存储位置，且便于修改存储文件名
+	virtual void Read() = 0;
+	virtual void Save() = 0;
 };
-book::book(bool weizhi) :weizhi(weizhi) {}
 void book::add_person() {
 	int num;
 	for (num = 0; num < 1000; num++) {
 		if (!contact[num].get_judge()) {
 			break;
 		}
-		else if (num = 999) {
+		else if (num == 999) {
 			cout << "此通讯录已满！\n";
 			return;
 		}
@@ -113,7 +113,7 @@ void book::find_person(string name) {
 			cout << contact[i].get_name() << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
 				<< contact[i].get_address();
 			if (!weizhi)
-				cout << "\t手机存储" << "\t" << i << "\n";
+				cout << "\t手机" << "\t" << i << "\n";
 			if (weizhi)
 				cout << "\t储存卡" << "\t" << i << "\n";
 		}
@@ -125,19 +125,28 @@ void book::look_though() {
 			cout << contact[i].get_name() << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
 				<< contact[i].get_address();
 			if (!weizhi)
-				cout << "\t手机存储" << "\t" << i << "\n";
+				cout << "\t手机" << "\t" << i << "\n";
 			if (weizhi)
 				cout << "\t储存卡" << "\t" << i << "\n";
 		}
 }
-void book::Read() {
-	string str, a, b, c, d;
+string book::GetFileName() {
 	if (!weizhi)
-		str = "PhoneIn.ini";
-	else if (weizhi)
-		str = "PhoneSdCard.ini";
-	fstream tooo(str.c_str(), ios::in);
-	for (int i = 0; tooo >> a >> b >> c >> d; i++) {
+		return "PhoneIn.ini";
+	else
+		return "PhoneCard.ini";
+}
+
+class BookPhone :public book {
+public:
+	BookPhone() { set_weizhi(false); }
+	void Read();
+	void Save();
+};
+void BookPhone::Read() {
+	string a, b, c, d;
+	fstream tooo(GetFileName().c_str(), ios::in);
+	for (int i = 0; i<1000 && tooo >> a >> b >> c >> d; i++) {
 		if (!contact[i].get_judge()) {
 			contact[i].set_name(a);
 			contact[i].set_num_phone(b);
@@ -147,13 +156,37 @@ void book::Read() {
 		}
 	}
 }
-void book::Save() {
-	string str;
-	if (!weizhi)
-		str = "PhoneIn.ini";
-	else if (weizhi)
-		str = "PhoneSdCard.ini";
-	fstream tooo(str.c_str(), ios::out);
+void BookPhone::Save() {
+	fstream tooo(GetFileName().c_str(), ios::out);
+	for (int i = 0; i < 1000; i++) {
+		if (contact[i].get_judge()) {
+			tooo << contact[i].get_name() << " " << contact[i].get_num_phone() << " " << contact[i].get_num_qq()
+				<< " " << contact[i].get_address() << "\n";
+		}
+	}
+}
+
+class BookCard :public book {
+public:
+	BookCard() { set_weizhi(true); }
+	void Read();
+	void Save();
+};
+void BookCard::Read() {
+	string a, b, c, d;
+	fstream tooo(GetFileName().c_str(), ios::in);
+	for (int i = 0; i<1000 && tooo >> a >> b >> c >> d; i++) {
+		if (!contact[i].get_judge()) {
+			contact[i].set_name(a);
+			contact[i].set_num_phone(b);
+			contact[i].set_num_qq(c);
+			contact[i].set_address(d);
+			contact[i].set_judge(true);
+		}
+	}
+}
+void BookCard::Save() {
+	fstream tooo(GetFileName().c_str(), ios::out);
 	for (int i = 0; i < 1000; i++) {
 		if (contact[i].get_judge()) {
 			tooo << contact[i].get_name() << " " << contact[i].get_num_phone() << " " << contact[i].get_num_qq()
@@ -165,7 +198,8 @@ void book::Save() {
 
 
 int main() {
-	book phone_in(false), phone_card(true); //定义手机通讯录 、储存卡通讯录
+	BookPhone phone_in;
+	BookCard phone_card; //定义手机通讯录 、储存卡通讯录
 	phone_in.Read();
 	phone_card.Read();
 	while (true) {
@@ -185,11 +219,12 @@ int main() {
 		cout << setw(46) << "*" << cout.fill('*') << "\n";
 		int num;
 		string name;
+		cout << "输入序号进行操作：";
 		cin >> num;
 		switch (num) {
 		case 1: //添加联系人
 			while (true) {
-				cout << "请选择存储位置：\n1、手机存储\t2、储存卡\n";
+				cout << "请选择存储位置：\n1、手机\t2、储存卡\n";
 				cin >> num;
 				if (num == 1) {
 					phone_in.add_person();
@@ -247,5 +282,7 @@ int main() {
 		default:
 			cout << "错误！请输入正确的号码！\n";
 		}
+		system("pause");
+		system("cls");
 	}
 }
