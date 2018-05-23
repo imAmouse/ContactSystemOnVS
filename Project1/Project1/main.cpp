@@ -45,7 +45,7 @@ public:
 	void revise_person(string name); //修改
 	void find_person(string name); //查询
 	friend ostream& operator<<(ostream &cout, book &temp); //重载<<运算符，实现浏览功能
-	book& operator+=(book &temp); //转存：BeTrans转存到当先对象，并返回*this
+	book& operator+=(book &temp); //转存：BeTrans转存到当先对象，并返回*（this）
 	string GetFileName(); //获取文件存储位置，且便于修改存储文件名
 	virtual void Read() = 0;
 	virtual void Save() = 0;
@@ -104,9 +104,9 @@ void book::revise_person(string name) {
 	cout << "修改成功！\n";
 }
 void book::find_person(string name) {
-	//查询：根据名字查询联系人信息（查询结果不唯一）
+	//查询：根据名字/电话号/QQ号/地址查询联系人信息（查询结果不唯一）
 	for (int i = 0; i < 1000; i++) {
-		if (name == contact[i].get_name()) {
+		if (name == contact[i].get_name() || name == contact[i].get_num_phone() || name == contact[i].get_num_qq() || name == contact[i].get_address()) {
 			cout << contact[i].get_name() << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
 				<< contact[i].get_address();
 			if (!weizhi)
@@ -241,7 +241,7 @@ int main() {
 	BookPhone phone_in;
 	BookCard phone_card; //定义手机通讯录 、储存卡通讯录
 	phone_in.Read();
-	phone_card.Read();
+	phone_card.Read(); //读联系人数据
 	while (true) {
 		StartDisplay(); //欢迎界面
 		int num;
@@ -263,37 +263,44 @@ int main() {
 				}
 				phone_in.Save();
 				phone_card.Save();
+				phone_in.Read();
+				phone_card.Read();
 				cout << "是否添加其他联系人？（Y/N）";
 				cin >> name;
 				if (name == "N" || name == "n")break;
 			}break;
 		case 2: //删除联系人
 			while (true) {
-				cout << "请输入联系人姓名：\n";
+				cout << "请输入联系人名字/电话号/QQ号/地址：\n";
 				cin >> name;
-				cout << "姓名\t电话号\tQQ号\t地址\t位置\t序号\n";
-				phone_in.find_person(name);
-				phone_card.find_person(name);
 				while (true) {
-					cout << "请输入你想删除的联系人存储位置\n（1.手机，2.储存卡）：";
+					cout << "姓名\t电话号\tQQ号\t地址\t位置\t序号\n";
+					phone_in.find_person(name);
+					phone_card.find_person(name);
+					cout << "请输入你想删除的联系人所在存储位置\n（1.手机，2.储存卡，9.结束）：";
 					cin >> num;
 					if (num == 1) {
 						cout << "请输入你想删除的联系人序号：";
 						cin >> num;
 						phone_in.delete_person(num);
-						break;
+						cout << "删除成功！\n";
 					}
 					else if (num == 2) {
 						cout << "请输入你想删除的联系人序号：";
 						cin >> num;
 						phone_card.delete_person(num);
-						break;
+						cout << "删除成功！\n";
 					}
+					else if (num == 9)
+						break;
 					else
 						cout << "请输入正确的序号！\n";
+					system("cls");
 				}
 				phone_in.Save();
 				phone_card.Save();
+				phone_in.Read();
+				phone_card.Read();
 				cout << "是否还要删除其他联系人？(Y/N)";
 				cin >> name;
 				if (name == "n" || name == "N")break;
@@ -316,9 +323,13 @@ int main() {
 				cin >> name;
 				cout << "是否还要修改其他联系人？(Y/N)";
 				cin >> name;
-				phone_in.Save();
-				phone_card.Save();
-				if (name == "n" || name == "N")break;
+				if (name == "n" || name == "N") {
+					phone_in.Save();
+					phone_card.Save();
+					phone_in.Read();
+					phone_card.Read();
+					break;
+				}
 			}
 			break;
 		case 5: //浏览已存储联系人
@@ -329,7 +340,7 @@ int main() {
 		case 6: //联系人转存
 			cout << "1.手机转存到储存卡\n2.储存卡转存到手机\n请输入序号：";
 			cin >> num;
-			if (num == 1) {
+			if (num == 1) {d
 				phone_card += phone_in;
 			}
 			else if (num == 2) {
@@ -339,7 +350,9 @@ int main() {
 				cout << "输入错误！请输入正确的序号！\n";
 			cout << "转存成功！\n";
 			phone_in.Save();
-			phone_card.Save();
+			phone_card.Save(); 
+			phone_in.Read();
+			phone_card.Read();
 			break;
 		case 9: //退出系统
 			return 0;
