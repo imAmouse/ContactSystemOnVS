@@ -1,21 +1,23 @@
 /*
- *         c++ ¿Î³ÌÉè¼Æ ¡ª¡ª¡ª¡ª Í¨Ñ¶Â¼ÏµÍ³
+ *         c++ è¯¾ç¨‹è®¾è®¡ â€”â€”â€”â€” é€šè®¯å½•ç³»ç»Ÿ
  *            start at 2018-05-05
- *     Designed By ¿Õ¼äĞÅÏ¢ÓëÊı×Ö¼¼Êõ1°à ¹ÙÎÄºÀ
+ *     Designed By ç©ºé—´ä¿¡æ¯ä¸æ•°å­—æŠ€æœ¯1ç­ å®˜æ–‡è±ª
  */
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <cstdlib>
+#include <sstream>
 
 using namespace std;
 
-//¶¨ÒåÁªÏµÈËÀà
+//å®šä¹‰è”ç³»äººç±»
 class person {
 private:
 	string name, num_phone, num_qq, address;
-	bool judge; //ÅĞ¶Ï´ËÊı¾İÊÇ·ñÓĞĞ§£¬ÒÔ±ãÓÚÔöÉ¾¡¢²éÕÒ¡¢ä¯ÀÀ²Ù×÷
+	bool judge; //åˆ¤æ–­æ­¤æ•°æ®æ˜¯å¦æœ‰æ•ˆï¼Œä»¥ä¾¿äºå¢åˆ ã€æŸ¥æ‰¾ã€æµè§ˆæ“ä½œ
 public:
 	person();
 	void set_name(string name) { this->name = name; }
@@ -31,65 +33,65 @@ public:
 };
 person::person() :judge(false) {}
 
-//¶¨Òåµç»°±¾»ùÀà
+//å®šä¹‰ç”µè¯æœ¬åŸºç±»
 class book {
 private:
-	bool weizhi; //falseÎªµç»°ÄÚ²¿£¬trueÎª´æ´¢¿¨´æ´¢
+	bool weizhi; //falseä¸ºç”µè¯å†…éƒ¨ï¼Œtrueä¸ºå­˜å‚¨å¡å­˜å‚¨
 public:
-	person contact[1000]; //Ã¿¸öµç»°±¾×î´óÈİÁ¿Îª1000
+	person contact[1000]; //æ¯ä¸ªç”µè¯æœ¬æœ€å¤§å®¹é‡ä¸º1000
 	void set_weizhi(bool weizhi) { this->weizhi = weizhi; }
-	bool get_weizhi() { return weizhi; } //·µ»ØÖµfalseÎªµç»°ÄÚ²¿£¬trueÎª´æ´¢¿¨´æ´¢
+	bool get_weizhi() { return weizhi; } //è¿”å›å€¼falseä¸ºç”µè¯å†…éƒ¨ï¼Œtrueä¸ºå­˜å‚¨å¡å­˜å‚¨
 	bool get_judge(int PhoneNum) { return contact[PhoneNum].get_judge(); }
 	void add_person();
-	void delete_person(int num); //´«ÈëÒªÉ¾³ıµÄ±àºÅ
-	void revise_person(string name); //ĞŞ¸Ä
-	void find_person(string name); //²éÑ¯
-	friend ostream& operator<<(ostream &cout, book &temp); //ÖØÔØ<<ÔËËã·û£¬ÊµÏÖä¯ÀÀ¹¦ÄÜ
-	book& operator+=(book &temp); //×ª´æ£ºBeTrans×ª´æµ½µ±ÏÈ¶ÔÏó£¬²¢·µ»Ø*£¨this£©
-	string GetFileName(); //»ñÈ¡ÎÄ¼ş´æ´¢Î»ÖÃ£¬ÇÒ±ãÓÚĞŞ¸Ä´æ´¢ÎÄ¼şÃû
+	void delete_person(int num); //ä¼ å…¥è¦åˆ é™¤çš„ç¼–å·
+	void revise_person(string name); //ä¿®æ”¹
+	void find_person(string name); //æŸ¥è¯¢
+	friend ostream& operator<<(ostream &cout, book &temp); //é‡è½½<<è¿ç®—ç¬¦ï¼Œå®ç°æµè§ˆåŠŸèƒ½
+	book& operator+=(book &temp); //è½¬å­˜ï¼šBeTransè½¬å­˜åˆ°å½“å…ˆå¯¹è±¡ï¼Œå¹¶è¿”å›*ï¼ˆthisï¼‰
+	string GetFileName(); //è·å–æ–‡ä»¶å­˜å‚¨ä½ç½®ï¼Œä¸”ä¾¿äºä¿®æ”¹å­˜å‚¨æ–‡ä»¶å
 	virtual void Read() = 0;
 	virtual void Save() = 0;
 };
 void book::add_person() {
 	int num;
-	//²éÕÒÎ´±»¼ÇÂ¼µÄÏî£¬Èô²»´æÔÚ£¬cout´íÎó²¢·µ»Ø
+	//æŸ¥æ‰¾æœªè¢«è®°å½•çš„é¡¹ï¼Œè‹¥ä¸å­˜åœ¨ï¼Œcouté”™è¯¯å¹¶è¿”å›
 	for (num = 0; num < 1000; num++) {
 		if (!contact[num].get_judge()) {
 			break;
 		}
 		else if (num == 999) {
-			cout << "´ËÍ¨Ñ¶Â¼ÒÑÂú£¡\n";
+			cout << "æ­¤é€šè®¯å½•å·²æ»¡ï¼\n";
 			return;
 		}
 	}
 	string temp;
 	bool judge;
-	cout << "ÇëÊäÈëÁªÏµÈËĞÕÃû£º\n";
+	cout << "è¯·è¾“å…¥è”ç³»äººå§“åï¼š\n";
 	cin >> temp;
 	contact[num].set_name(temp);
 	contact[num].set_judge(true);
-	cout << "ÊÇ·ñ¼ÇÂ¼µç»°ºÅÂë£¿(1/0)";
+	cout << "æ˜¯å¦è®°å½•ç”µè¯å·ç ï¼Ÿ(1/0)";
 	cin >> judge;
 	if (judge) {
-		cout << "ÇëÊäÈë£º";
+		cout << "è¯·è¾“å…¥ï¼š";
 		cin >> temp;
 		contact[num].set_num_phone(temp);
 	}
-	cout << "ÊÇ·ñ¼ÇÂ¼QQºÅÂë£¿(1/0)";
+	cout << "æ˜¯å¦è®°å½•QQå·ç ï¼Ÿ(1/0)";
 	cin >> judge;
 	if (judge) {
-		cout << "ÇëÊäÈë£º";
+		cout << "è¯·è¾“å…¥ï¼š";
 		cin >> temp;
 		contact[num].set_num_qq(temp);
 	}
-	cout << "ÊÇ·ñ¼ÇÂ¼ÁªÏµÈËµØÖ·£¿(1/0)";
+	cout << "æ˜¯å¦è®°å½•è”ç³»äººåœ°å€ï¼Ÿ(1/0)";
 	cin >> judge;
 	if (judge) {
-		cout << "ÇëÊäÈë£º";
+		cout << "è¯·è¾“å…¥ï¼š";
 		cin >> temp;
 		contact[num].set_address(temp);
 	}
-	cout << "Ìí¼Ó³É¹¦£¡\n";
+	cout << "æ·»åŠ æˆåŠŸï¼\n";
 }
 void book::delete_person(int num) {
 	contact[num].set_judge(false);
@@ -97,22 +99,22 @@ void book::delete_person(int num) {
 	contact[num].set_num_phone("");
 	contact[num].set_num_qq("");
 	contact[num].set_num_phone("");
-	cout << "É¾³ı³É¹¦£¡\n";
+	cout << "åˆ é™¤æˆåŠŸï¼\n";
 }
 void book::revise_person(string name) {
 
-	cout << "ĞŞ¸Ä³É¹¦£¡\n";
+	cout << "ä¿®æ”¹æˆåŠŸï¼\n";
 }
 void book::find_person(string name) {
-	//²éÑ¯£º¸ù¾İÃû×Ö/µç»°ºÅ/QQºÅ/µØÖ·²éÑ¯ÁªÏµÈËĞÅÏ¢£¨²éÑ¯½á¹û²»Î¨Ò»£©
+	//æŸ¥è¯¢ï¼šæ ¹æ®åå­—/ç”µè¯å·/QQå·/åœ°å€æŸ¥è¯¢è”ç³»äººä¿¡æ¯ï¼ˆæŸ¥è¯¢ç»“æœä¸å”¯ä¸€ï¼‰
 	for (int i = 0; i < 1000; i++) {
 		if (name == contact[i].get_name() || name == contact[i].get_num_phone() || name == contact[i].get_num_qq() || name == contact[i].get_address()) {
 			cout << contact[i].get_name() << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
 				<< contact[i].get_address();
 			if (!weizhi)
-				cout << "\tÊÖ»ú" << "\t" << i << "\n";
+				cout << "\tæ‰‹æœº" << "\t" << i << "\n";
 			if (weizhi)
-				cout << "\t´¢´æ¿¨" << "\t" << i << "\n";
+				cout << "\tå‚¨å­˜å¡" << "\t" << i << "\n";
 		}
 	}
 }
@@ -122,35 +124,35 @@ ostream& operator<<(ostream &cout, book &temp) {
 			cout << temp.contact[i].get_name() << "\t" << temp.contact[i].get_num_phone() << "\t" << temp.contact[i].get_num_qq() << "\t"
 				<< temp.contact[i].get_address();
 			if (!temp.get_weizhi())
-				cout << "\tÊÖ»ú" << "\t" << i << "\n";
+				cout << "\tæ‰‹æœº" << "\t" << i << "\n";
 			else
-				cout << "\t´¢´æ¿¨" << "\t" << i << "\n";
+				cout << "\tå‚¨å­˜å¡" << "\t" << i << "\n";
 		}
 	return cout;
 }
 book& book::operator+=(book &BeTrans) {
 	/*
-	BeTrans×ª´æµ½µ±Ç°¶ÔÏó£¬²¢·µ»Ø*this
-	×¢£º±ÜÃâÖØ¸´Êı¾İµÄ´æÔÚ¡£²¢ÇÒÔÚ×ª´æÊÇÒª¼ì²éÈİÁ¿ÊÇ·ñÊÜÏŞ¡£
+	BeTransè½¬å­˜åˆ°å½“å‰å¯¹è±¡ï¼Œå¹¶è¿”å›*this
+	æ³¨ï¼šé¿å…é‡å¤æ•°æ®çš„å­˜åœ¨ã€‚å¹¶ä¸”åœ¨è½¬å­˜æ˜¯è¦æ£€æŸ¥å®¹é‡æ˜¯å¦å—é™ã€‚
 	*/
-	//·Ö±ğ¼ÇÂ¼ BeTransNumÒÑÓĞÁªÏµÈËÊı ºÍ TransToNum¿É¼ÇÂ¼ÁªÏµÈËÊı
+	//åˆ†åˆ«è®°å½• BeTransNumå·²æœ‰è”ç³»äººæ•° å’Œ TransToNumå¯è®°å½•è”ç³»äººæ•°
 	int BeTransNum = 0, TransToNum = 0;
-	//¼ÆËã BeTransNumÒÑÓĞÁªÏµÈËÊı ºÍ TransToNum¿É¼ÇÂ¼ÁªÏµÈËÊı
+	//è®¡ç®— BeTransNumå·²æœ‰è”ç³»äººæ•° å’Œ TransToNumå¯è®°å½•è”ç³»äººæ•°
 	for (int i = 0; i < 1000; i++) {
 		if (BeTrans.contact[i].get_judge())
 			BeTransNum++;
 		if (!contact[i].get_judge())
 			TransToNum++;
 	}
-	//¼ì²éÈİÁ¿ÊÇ·ñÊÜÏŞ
+	//æ£€æŸ¥å®¹é‡æ˜¯å¦å—é™
 	if (BeTransNum > TransToNum) {
 		if (!BeTrans.get_weizhi())
-			cout << "ÊÖ»úÈİÁ¿²»¹»£¡\n";
+			cout << "æ‰‹æœºå®¹é‡ä¸å¤Ÿï¼\n";
 		else
-			cout << "´æ´¢¿¨ÈİÁ¿²»¹»£¡\n";
+			cout << "å­˜å‚¨å¡å®¹é‡ä¸å¤Ÿï¼\n";
 		return *this;
 	}
-	//×ª´æ
+	//è½¬å­˜
 	for (int i = 0; i < 1000; i++) {
 		int i1 = 0;
 		if (BeTrans.contact[i].get_judge()) {
@@ -175,7 +177,7 @@ string book::GetFileName() {
 		return "PhoneCard.ini";
 }
 
-//¶¨ÒåÊÖ»úµç»°±¾Àà
+//å®šä¹‰æ‰‹æœºç”µè¯æœ¬ç±»
 class BookPhone :public book {
 public:
 	BookPhone() { set_weizhi(false); }
@@ -183,9 +185,12 @@ public:
 	void Save();
 };
 void BookPhone::Read() {
-	string a, b, c, d;
+	string a, b, c, d, temp;
 	fstream tooo(GetFileName().c_str(), ios::in);
-	for (int i = 0; i<1000 && tooo >> a >> b >> c >> d; i++) {
+	for (int i = 0; i<1000 && getline(tooo,temp); i++,a="",b="",c="",d="") {
+        stringstream stemp;
+	    stemp<<temp;
+	    stemp>>a>>b>>c>>d; //è¯»å–è¡Œå†…å®¹
 		if (!contact[i].get_judge()) {
 			contact[i].set_name(a);
 			contact[i].set_num_phone(b);
@@ -205,7 +210,7 @@ void BookPhone::Save() {
 	}
 }
 
-//¶¨Òå´¢´æ¿¨µç»°±¾Àà
+//å®šä¹‰å‚¨å­˜å¡ç”µè¯æœ¬ç±»
 class BookCard :public book {
 public:
 	BookCard() { set_weizhi(true); }
@@ -213,9 +218,12 @@ public:
 	void Save();
 };
 void BookCard::Read() {
-	string a, b, c, d;
+	string a, b, c, d, temp;
 	fstream tooo(GetFileName().c_str(), ios::in);
-	for (int i = 0; i<1000 && tooo >> a >> b >> c >> d; i++) {
+	for (int i = 0; i<1000 && getline(tooo,temp); i++,a="",b="",c="",d="") {
+        stringstream stemp;
+	    stemp<<temp;
+	    stemp>>a>>b>>c>>d; //è¯»å–è¡Œå†…å®¹
 		if (!contact[i].get_judge()) {
 			contact[i].set_name(a);
 			contact[i].set_num_phone(b);
@@ -238,19 +246,20 @@ void BookCard::Save() {
 
 int main() {
 	void StartDisplay();
+	book *temp;
 	BookPhone phone_in;
-	BookCard phone_card; //¶¨ÒåÊÖ»úÍ¨Ñ¶Â¼ ¡¢´¢´æ¿¨Í¨Ñ¶Â¼
+	BookCard phone_card; //å®šä¹‰æ‰‹æœºé€šè®¯å½• ã€å‚¨å­˜å¡é€šè®¯å½•
 	phone_in.Read();
-	phone_card.Read(); //¶ÁÁªÏµÈËÊı¾İ
+	phone_card.Read(); //è¯»è”ç³»äººæ•°æ®
 	while (true) {
-		StartDisplay(); //»¶Ó­½çÃæ
+		StartDisplay(); //æ¬¢è¿ç•Œé¢
 		int num;
 		string name;
 		cin >> num;
 		switch (num) {
-		case 1: //Ìí¼ÓÁªÏµÈË
+		case 1: //æ·»åŠ è”ç³»äºº
 			while (true) {
-				cout << "ÇëÑ¡Ôñ´æ´¢Î»ÖÃ£º\n1¡¢ÊÖ»ú\t2¡¢´¢´æ¿¨\n";
+				cout << "è¯·é€‰æ‹©å­˜å‚¨ä½ç½®ï¼š\n1ã€æ‰‹æœº\t2ã€å‚¨å­˜å¡\n";
 				cin >> num;
 				if (num == 1) {
 					phone_in.add_person();
@@ -259,69 +268,69 @@ int main() {
 					phone_card.add_person();
 				}
 				else {
-					cout << "´íÎó£¡ÇëÊäÈëÕıÈ·µÄºÅÂë£º\n";
+					cout << "é”™è¯¯ï¼è¯·è¾“å…¥æ­£ç¡®çš„å·ç ï¼š\n";
 				}
 				phone_in.Save();
 				phone_card.Save();
 				phone_in.Read();
 				phone_card.Read();
-				cout << "ÊÇ·ñÌí¼ÓÆäËûÁªÏµÈË£¿£¨Y/N£©";
+				cout << "æ˜¯å¦æ·»åŠ å…¶ä»–è”ç³»äººï¼Ÿï¼ˆY/Nï¼‰";
 				cin >> name;
 				if (name == "N" || name == "n")break;
 			}break;
-		case 2: //É¾³ıÁªÏµÈË
+		case 2: //åˆ é™¤è”ç³»äºº
 			while (true) {
-				cout << "ÇëÊäÈëÁªÏµÈËÃû×Ö/µç»°ºÅ/QQºÅ/µØÖ·£º\n";
+				cout << "è¯·è¾“å…¥è”ç³»äººåå­—/ç”µè¯å·/QQå·/åœ°å€ï¼š\n";
 				cin >> name;
 				while (true) {
-					cout << "ĞÕÃû\tµç»°ºÅ\tQQºÅ\tµØÖ·\tÎ»ÖÃ\tĞòºÅ\n";
+					cout << "å§“å\tç”µè¯å·\tQQå·\tåœ°å€\tä½ç½®\tåºå·\n";
 					phone_in.find_person(name);
 					phone_card.find_person(name);
-					cout << "ÇëÊäÈëÄãÏëÉ¾³ıµÄÁªÏµÈËËùÔÚ´æ´¢Î»ÖÃ\n£¨1.ÊÖ»ú£¬2.´¢´æ¿¨£¬9.½áÊø£©£º";
+					cout << "è¯·è¾“å…¥ä½ æƒ³åˆ é™¤çš„è”ç³»äººæ‰€åœ¨å­˜å‚¨ä½ç½®\nï¼ˆ1.æ‰‹æœºï¼Œ2.å‚¨å­˜å¡ï¼Œ9.ç»“æŸï¼‰ï¼š";
 					cin >> num;
 					if (num == 1) {
-						cout << "ÇëÊäÈëÄãÏëÉ¾³ıµÄÁªÏµÈËĞòºÅ£º";
+						cout << "è¯·è¾“å…¥ä½ æƒ³åˆ é™¤çš„è”ç³»äººåºå·ï¼š";
 						cin >> num;
 						phone_in.delete_person(num);
-						cout << "É¾³ı³É¹¦£¡\n";
+						cout << "åˆ é™¤æˆåŠŸï¼\n";
 					}
 					else if (num == 2) {
-						cout << "ÇëÊäÈëÄãÏëÉ¾³ıµÄÁªÏµÈËĞòºÅ£º";
+						cout << "è¯·è¾“å…¥ä½ æƒ³åˆ é™¤çš„è”ç³»äººåºå·ï¼š";
 						cin >> num;
 						phone_card.delete_person(num);
-						cout << "É¾³ı³É¹¦£¡\n";
+						cout << "åˆ é™¤æˆåŠŸï¼\n";
 					}
 					else if (num == 9)
 						break;
 					else
-						cout << "ÇëÊäÈëÕıÈ·µÄĞòºÅ£¡\n";
+						cout << "è¯·è¾“å…¥æ­£ç¡®çš„åºå·ï¼\n";
 					system("cls");
 				}
 				phone_in.Save();
 				phone_card.Save();
 				phone_in.Read();
 				phone_card.Read();
-				cout << "ÊÇ·ñ»¹ÒªÉ¾³ıÆäËûÁªÏµÈË£¿(Y/N)";
+				cout << "æ˜¯å¦è¿˜è¦åˆ é™¤å…¶ä»–è”ç³»äººï¼Ÿ(Y/N)";
 				cin >> name;
 				if (name == "n" || name == "N")break;
 			}break;
-		case 3: //²éÕÒÁªÏµÈË
+		case 3: //æŸ¥æ‰¾è”ç³»äºº
 			while (true) {
-				cout << "ÇëÊäÈë±»²éÕÒĞÕÃû£º\n";
+				cout << "è¯·è¾“å…¥è¢«æŸ¥æ‰¾å§“åï¼š\n";
 				cin >> name;
-				cout << "ĞÕÃû\tµç»°ºÅ\tQQºÅ\tµØÖ·\tÎ»ÖÃ\tĞòºÅ\n";
+				cout << "å§“å\tç”µè¯å·\tQQå·\tåœ°å€\tä½ç½®\tåºå·\n";
 				phone_in.find_person(name);
 				phone_card.find_person(name);
-				cout << "ÄãÏë²éÕÒÆäËûÁªÏµÈËÂğ£¿(Y/N)\n";
+				cout << "ä½ æƒ³æŸ¥æ‰¾å…¶ä»–è”ç³»äººå—ï¼Ÿ(Y/N)\n";
 				cin >> name;
 				if (name == "N" || name == "n")
 					break;
 			}break;
-		case 4: //ĞŞ¸ÄÁªÏµÈË
+		case 4: //ä¿®æ”¹è”ç³»äºº
 			while (true) {
-				cout << "ÇëÊäÈëÁªÏµÈËĞÕÃû£º";
+				cout << "è¯·è¾“å…¥è”ç³»äººå§“åï¼š";
 				cin >> name;
-				cout << "ÊÇ·ñ»¹ÒªĞŞ¸ÄÆäËûÁªÏµÈË£¿(Y/N)";
+				cout << "æ˜¯å¦è¿˜è¦ä¿®æ”¹å…¶ä»–è”ç³»äººï¼Ÿ(Y/N)";
 				cin >> name;
 				if (name == "n" || name == "N") {
 					phone_in.Save();
@@ -332,53 +341,53 @@ int main() {
 				}
 			}
 			break;
-		case 5: //ä¯ÀÀÒÑ´æ´¢ÁªÏµÈË
-			cout << "ĞÕÃû\tµç»°ºÅ\tQQºÅ\tµØÖ·\tÎ»ÖÃ\tĞòºÅ\n";
+		case 5: //æµè§ˆå·²å­˜å‚¨è”ç³»äºº
+			cout << "å§“å\tç”µè¯å·\tQQå·\tåœ°å€\tä½ç½®\tåºå·\n";
 			cout << phone_in;
 			cout << phone_card;
 			break;
-		case 6: //ÁªÏµÈË×ª´æ
-			cout << "1.ÊÖ»ú×ª´æµ½´¢´æ¿¨\n2.´¢´æ¿¨×ª´æµ½ÊÖ»ú\nÇëÊäÈëĞòºÅ£º";
+		case 6: //è”ç³»äººè½¬å­˜
+			cout << "1.æ‰‹æœºè½¬å­˜åˆ°å‚¨å­˜å¡\n2.å‚¨å­˜å¡è½¬å­˜åˆ°æ‰‹æœº\nè¯·è¾“å…¥åºå·ï¼š";
 			cin >> num;
-			if (num == 1) {d
+			if (num == 1) {
 				phone_card += phone_in;
 			}
 			else if (num == 2) {
 				phone_in += phone_card;
 			}
 			else
-				cout << "ÊäÈë´íÎó£¡ÇëÊäÈëÕıÈ·µÄĞòºÅ£¡\n";
-			cout << "×ª´æ³É¹¦£¡\n";
+				cout << "è¾“å…¥é”™è¯¯ï¼è¯·è¾“å…¥æ­£ç¡®çš„åºå·ï¼\n";
+			cout << "è½¬å­˜æˆåŠŸï¼\n";
 			phone_in.Save();
-			phone_card.Save(); 
+			phone_card.Save();
 			phone_in.Read();
 			phone_card.Read();
 			break;
-		case 9: //ÍË³öÏµÍ³
+		case 9: //é€€å‡ºç³»ç»Ÿ
 			return 0;
 		default:
-			cout << "´íÎó£¡ÇëÊäÈëÕıÈ·µÄºÅÂë£¡\n";
+			cout << "é”™è¯¯ï¼è¯·è¾“å…¥æ­£ç¡®çš„å·ç ï¼\n";
 		}
 		system("pause");
 		system("cls");
 	}
 }
 
-void StartDisplay() { //»¶Ó­½çÃæ
+void StartDisplay() { //æ¬¢è¿ç•Œé¢
 	cout.setf(ios::left);
 	cout << setw(46) << "*" << cout.fill('*') << "\n";
 	cout.fill(' ');
 	cout << setw(45) << "*" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡¡¡¡¡Í¨Ñ¶Â¼¹ÜÀíÏµÍ³" << "*\n";
-	cout << setw(45) << "*      ÇëÊäÈëÊı×ÖÀ´½øĞĞÓĞ¹Ø²Ù×÷£º" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡1¡¢ Ìí¼ÓÁªÏµÈË" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡2¡¢ É¾³ıÁªÏµÈË" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡3¡¢ ²éÕÒÁªÏµÈË" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡4¡¢ ĞŞ¸ÄÒÑ¾­´æÔÚµÄÁªÏµÈËĞÅÏ¢" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡5¡¢ ä¯ÀÀÒÑ¾­´æÔÚµÄÁªÏµÈËĞÅÏ¢" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡6¡¢ ÁªÏµÈË×ª´æ" << "*\n";
-	cout << setw(45) << "*¡¡¡¡¡¡9¡¢ ÍË³öÏµÍ³" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€ã€€ã€€é€šè®¯å½•ç®¡ç†ç³»ç»Ÿ" << "*\n";
+	cout << setw(45) << "*      è¯·è¾“å…¥æ•°å­—æ¥è¿›è¡Œæœ‰å…³æ“ä½œï¼š" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€1ã€ æ·»åŠ è”ç³»äºº" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€2ã€ åˆ é™¤è”ç³»äºº" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€3ã€ æŸ¥æ‰¾è”ç³»äºº" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€4ã€ ä¿®æ”¹å·²ç»å­˜åœ¨çš„è”ç³»äººä¿¡æ¯" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€5ã€ æµè§ˆå·²ç»å­˜åœ¨çš„è”ç³»äººä¿¡æ¯" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€6ã€ è”ç³»äººè½¬å­˜" << "*\n";
+	cout << setw(45) << "*ã€€ã€€ã€€9ã€ é€€å‡ºç³»ç»Ÿ" << "*\n";
 	cout << setw(45) << "*" << "*\n";
 	cout << setw(46) << "*" << cout.fill('*') << "\n";
-	cout << "ÊäÈëĞòºÅ½øĞĞ²Ù×÷£º";
+	cout << "è¾“å…¥åºå·è¿›è¡Œæ“ä½œï¼š";
 }
