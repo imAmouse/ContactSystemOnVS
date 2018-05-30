@@ -46,7 +46,7 @@ public:
 	bool get_judge(int Num) { return contact[Num].get_judge(); } //返回联系人空间是否被占用
 	void add_person();
 	void delete_person(int num); //传入要删除的编号
-	void revise_person(string name); //修改
+	void revise_person(int num); //修改
 	void find_person(string name); //查询
 	friend ostream& operator<<(ostream &cout, book &temp); //重载<<运算符，实现浏览功能
 	book& operator+=(book &temp); //转存：BeTrans转存到当先对象，并返回*（this）
@@ -94,19 +94,21 @@ void book::add_person() {
 		cin >> temp;
 		contact[num].set_num_phone(temp);
 	}
-	cout << "是否记录QQ号码？(Y/N)";
-	cin >> temp;
-	if (temp == "Y" || temp == "y") {
-		cout << "请输入：";
+	if (weizhi) { //判断位置，手机只记录姓名和电话号
+		cout << "是否记录QQ号码？(Y/N)";
 		cin >> temp;
-		contact[num].set_num_qq(temp);
-	}
-	cout << "是否记录联系人地址？(Y/N)";
-	cin >> temp;
-	if (temp == "Y" || temp == "y") {
-		cout << "请输入：";
+		if (temp == "Y" || temp == "y") {
+			cout << "请输入：";
+			cin >> temp;
+			contact[num].set_num_qq(temp);
+		}
+		cout << "是否记录联系人地址？(Y/N)";
 		cin >> temp;
-		contact[num].set_address(temp);
+		if (temp == "Y" || temp == "y") {
+			cout << "请输入：";
+			cin >> temp;
+			contact[num].set_address(temp);
+		}
 	}
 	cout << "添加成功！\n";
 }
@@ -117,32 +119,62 @@ void book::delete_person(int num) {
 	contact[num].set_num_qq("");
 	contact[num].set_address("");
 }
-void book::revise_person(string name) {
-
+void book::revise_person(int num) {
+	string temp;
+	cout << "是否修改联系人姓名？（Y/N）";
+	cin >> temp;
+	if (temp == "Y" || temp == "y") {
+		cout << "请输入联系人姓名：\n";
+		cin >> temp;
+		contact[num].set_name(temp);
+	}
+	cout << "是否修改电话号码？(Y/N)";
+	cin >> temp;
+	if (temp == "Y" || temp == "y") {
+		cout << "请输入：";
+		cin >> temp;
+		contact[num].set_num_phone(temp);
+	}
+	if (weizhi) { //判断位置，手机只记录姓名和电话号
+		cout << "是否修改QQ号码？(Y/N)";
+		cin >> temp;
+		if (temp == "Y" || temp == "y") {
+			cout << "请输入：";
+			cin >> temp;
+			contact[num].set_num_qq(temp);
+		}
+		cout << "是否修改联系人地址？(Y/N)";
+		cin >> temp;
+		if (temp == "Y" || temp == "y") {
+			cout << "请输入：";
+			cin >> temp;
+			contact[num].set_address(temp);
+		}
+	}
 	cout << "修改成功！\n";
 }
 void book::find_person(string name) {
-	//查询：根据名字/电话号/QQ号/地址查询联系人信息（查询结果不唯一）
+	/*查询：根据名字/电话号/QQ号/地址查询联系人信息（查询结果不唯一）
+	  并使用bool数组记录所查找序号并返回
+	*/
 	for (int i = 0; i < 1000; i++) {
-		if (name == get_contact(i, 1) || name == contact[i].get_num_phone() || name == contact[i].get_num_qq() || name == contact[i].get_address()) {
-			cout << get_contact(i, 1) << "\t" << contact[i].get_num_phone() << "\t" << contact[i].get_num_qq() << "\t"
-				<< contact[i].get_address();
-			if (!weizhi)
-				cout << "\t手机" << "\t" << i << "\n";
+		if (get_contact(i, 1).find(name) != string::npos || get_contact(i, 2).find(name) != string::npos || get_contact(i, 3).find(name) != string::npos || get_contact(i, 4).find(name) != string::npos) {
+			cout << get_contact(i, 1) << "\t" << contact[i].get_num_phone();
+			if (!weizhi) //手机只记录姓名 电话，QQ和地址输出为“\\\\\\”
+				cout << "\t\\\\\\\\\\\\\t\\\\\\\\\\\\\t手机" << "\t" << i << "\n";
 			if (weizhi)
-				cout << "\t储存卡" << "\t" << i << "\n";
+				cout << "\t" << contact[i].get_num_qq() << "\t" << contact[i].get_address() << "\t储存卡" << "\t" << i << "\n";
 		}
 	}
 }
 ostream& operator<<(ostream &cout, book &temp) {
 	for (int i = 0; i < 1000; i++)
 		if (temp.contact[i].get_judge() == true) {
-			cout << temp.get_contact(i, 1) << "\t" << temp.contact[i].get_num_phone() << "\t" << temp.contact[i].get_num_qq() << "\t"
-				<< temp.contact[i].get_address();
+			cout << temp.get_contact(i, 1) << "\t" << temp.contact[i].get_num_phone();
 			if (!temp.get_weizhi())
-				cout << "\t手机" << "\t" << i << "\n";
+				cout << "\t" << "\\\\\\\\\\\\" << "\t" << "\\\\\\\\\\\\" << "\t手机" << "\t" << i << endl;
 			else
-				cout << "\t储存卡" << "\t" << i << "\n";
+				cout << "\t" << temp.contact[i].get_num_qq() << "\t" << temp.contact[i].get_address() << "\t储存卡" << "\t" << i << endl;
 		}
 	return cout;
 }
@@ -207,6 +239,10 @@ void BookPhone::Read() {
 		stringstream stemp;
 		stemp << temp;
 		stemp >> a >> b >> c >> d; //读取行内容
+		if (a == "***") a = "";
+		if (b == "***") b = "";
+		if (c == "***") c = "";
+		if (d == "***") d = "";
 		if (!get_judge(i)) {
 			set_contact(i, a, b, c, d, true);
 		}
@@ -214,10 +250,14 @@ void BookPhone::Read() {
 }
 void BookPhone::Save() {
 	fstream tooo(GetFileName().c_str(), ios::out);
+	string a, b;
 	for (int i = 0; i < 1000; i++) {
 		if (get_judge(i)) {
-			tooo << get_contact(i, 1) << " " << get_contact(i, 2) << " " << get_contact(i, 3)
-				<< " " << get_contact(i, 4) << "\n";
+			a = get_contact(i, 1);
+			b = get_contact(i, 2);
+			if (a == "") a = "***";
+			if (b == "") b = "***";
+			tooo << a << " " << b << " *** ***\n";
 		}
 	}
 }
@@ -236,6 +276,10 @@ void BookCard::Read() {
 		stringstream stemp;
 		stemp << temp;
 		stemp >> a >> b >> c >> d; //读取行内容
+		if (a == "***") a = "";
+		if (b == "***") b = "";
+		if (c == "***") c = "";
+		if (d == "***") d = "";
 		if (!get_judge(i)) {
 			set_contact(i, a, b, c, d, true);
 		}
@@ -243,10 +287,18 @@ void BookCard::Read() {
 }
 void BookCard::Save() {
 	fstream tooo(GetFileName().c_str(), ios::out);
+	string a, b, c, d;
 	for (int i = 0; i < 1000; i++) {
 		if (get_judge(i)) {
-			tooo << get_contact(i, 1) << " " << get_contact(i, 2) << " " << get_contact(i, 3)
-				<< " " << get_contact(i, 4) << "\n";
+			a = get_contact(i, 1);
+			b = get_contact(i, 2);
+			c = get_contact(i, 3);
+			d = get_contact(i, 4);
+			if (a == "") a = "***";
+			if (b == "") b = "***";
+			if (c == "") c = "***";
+			if (d == "") d = "***";
+			tooo << a << " " << b << " " << c << " " << d << "\n";
 		}
 	}
 }
@@ -254,7 +306,7 @@ void BookCard::Save() {
 //定义界面类
 class Welcome {
 private:
-	book * temp;
+	book * p;
 	BookPhone phone_in;
 	BookCard phone_card;
 	void Add(); //增
@@ -266,14 +318,12 @@ private:
 public:
 	Welcome();
 	int StartDisplay(); //欢迎界面
-	~Welcome();
 };
 Welcome::Welcome() {
-	phone_in.Read();
-	phone_card.Read(); //读联系人数据
-}
-Welcome::~Welcome() {
-	delete temp;
+	p = &phone_in;
+	p->Read();
+	p = &phone_card;
+	p->Read(); //读联系人数据
 }
 int Welcome::StartDisplay() { //欢迎界面
 	while (true) {
@@ -332,10 +382,12 @@ void Welcome::Add() {
 		else {
 			cout << "错误！请输入正确的号码：\n";
 		}
-		phone_in.Save();
-		phone_card.Save();
-		phone_in.Read();
-		phone_card.Read();
+		p = &phone_in;
+		p->Save();
+		p->Read();
+		p = &phone_card;
+		p->Save();
+		p->Read();
 		cout << "是否添加其他联系人？（Y/N）";
 		cin >> name;
 		if (name == 'N' || name == 'n')
@@ -372,10 +424,12 @@ void Welcome::Del() {
 				cout << "请输入正确的序号！\n";
 			system("cls");
 		}
-		phone_in.Save();
-		phone_card.Save();
-		phone_in.Read();
-		phone_card.Read();
+		p = &phone_in;
+		p->Save();
+		p->Read();
+		p = &phone_card;
+		p->Save();
+		p->Read();
 		cout << "是否还要删除其他联系人？(Y/N)";
 		cin >> name;
 		if (name == "n" || name == "N")break;
@@ -397,19 +451,32 @@ void Welcome::Find() {
 }
 void Welcome::Revice() {
 	string name;
+	int num1, num2;
 	while (true) {
 		cout << "请输入联系人姓名：";
 		cin >> name;
 		cout << "姓名\t电话号\tQQ号\t地址\t位置\t序号\n";
 		phone_in.find_person(name);
 		phone_card.find_person(name);
+		cout << "请输入联系人位置：\n1.手机\t2.存储卡" << endl;
+		cin >> num1;
+		cout << "请输入联系人序号：";
+		cin >> num2;
+		if (num2 == 1) {
+			phone_in.revise_person(num2);
+		}
+		if (num2 == 2) {
+			phone_in.revise_person(num2);
+		}
 		cout << "是否还要修改其他联系人？(Y/N)";
 		cin >> name;
 		if (name == "n" || name == "N") {
-			phone_in.Save();
-			phone_card.Save();
-			phone_in.Read();
-			phone_card.Read();
+			p = &phone_in;
+			p->Save();
+			p->Read();
+			p = &phone_card;
+			p->Save();
+			p->Read();
 			break;
 		}
 	}
@@ -432,10 +499,12 @@ void Welcome::Trans() {
 	else
 		cout << "输入错误！请输入正确的序号！\n";
 	cout << "转存成功！\n";
-	phone_in.Save();
-	phone_card.Save();
-	phone_in.Read();
-	phone_card.Read();
+	p = &phone_in;
+	p->Save();
+	p->Read();
+	p = &phone_card;
+	p->Save();
+	p->Read();
 }
 
 
