@@ -47,7 +47,7 @@ public:
 	void add_person();
 	void delete_person(int num); //传入要删除的编号
 	void revise_person(int num); //修改
-	bool find_person(string name); //查询
+	void find_person(string name, bool IfDel); //查询
 	friend ostream& operator<<(ostream &cout, book &temp); //重载<<运算符，实现浏览功能
 	book& operator+=(book &temp); //转存：BeTrans转存到当先对象，并返回*（this）
 	string GetFileName(); //获取文件存储位置，且便于修改存储文件名
@@ -153,22 +153,22 @@ void book::revise_person(int num) {
 	}
 	cout << "修改成功！\n";
 }
-bool book::find_person(string name) {
+void book::find_person(string name, bool IfDel = false) {
 	/*查询：根据名字/电话号/QQ号/地址查询联系人信息（查询结果不唯一）
-	  并使用bool数组记录所查找序号并返回
 	*/
-	bool temp[1000];
 	for (int i = 0; i < 1000; i++) {
 		if (get_contact(i, 1).find(name) != string::npos || get_contact(i, 2).find(name) != string::npos || get_contact(i, 3).find(name) != string::npos || get_contact(i, 4).find(name) != string::npos) {
 			cout << get_contact(i, 1) << "\t" << contact[i].get_num_phone();
-			if (!weizhi) //手机只记录姓名 电话，QQ和地址输出为“\\\\\\”
-				cout << "\t\\\\\\\\\\\\\t\\\\\\\\\\\\\t手机" << "\t" << i << "\n";
-			if (weizhi)
-				cout << "\t" << contact[i].get_num_qq() << "\t" << contact[i].get_address() << "\t储存卡" << "\t" << i << "\n";
-			temp[i] = true; //记录查找到的联系人序号
+			if (IfDel == false) {
+				if (!weizhi) //手机只记录姓名 电话，QQ和地址输出为“\\\\\\”
+					cout << "\t\\\\\\\\\\\\\t\\\\\\\\\\\\\t手机" << "\t" << i << "\n";
+				if (weizhi)
+					cout << "\t" << contact[i].get_num_qq() << "\t" << contact[i].get_address() << "\t储存卡" << "\t" << i << "\n";
+			}
+			else if (IfDel == true)
+				delete_person(i);
 		}
 	}
-	return temp;
 }
 ostream& operator<<(ostream &cout, book &temp) {
 	for (int i = 0; i < 1000; i++)
@@ -409,10 +409,9 @@ void Welcome::Del() {
 		cout << "请输入联系人名字/电话号/QQ号/地址：\n";
 		cin >> name;
 		while (true) {
-			bool temp_in[1000], temp_card[1000];
 			cout << "姓名\t电话号\tQQ号\t地址\t位置\t序号\n";
-			temp_in=phone_in.find_person(name);
-			temp_card=phone_card.find_person(name);
+			phone_in.find_person(name);
+			phone_card.find_person(name);
 			cout << "请输入你想删除的联系人所在存储位置\n（1.手机，2.储存卡，3，全部删除，9.结束）：";
 			cin >> num;
 			if (num == 1) {
@@ -428,12 +427,9 @@ void Welcome::Del() {
 				cout << "删除成功！\n";
 			}
 			else if (num == 3) {
-				for (int i = 0; i < 1000; i++) {
-					if(temp_in[i]==true)
-						phone_in.delete_person(i);
-					if (temp_card[i] == true)
-						phone_card.delete_person(i);
-				}
+				phone_in.find_person(name, true);
+				phone_card.find_person(name, true);
+				cout << "删除成功！\n";
 			}
 			else if (num == 9)
 				break;
