@@ -245,19 +245,17 @@ public:
 	void Save();
 };
 void BookPhone::Read() {
-	string a, b, c, d, temp;
+	string a, b, temp;
 	fstream tooo(GetFileName().c_str(), ios::in);
-	for (int i = 0; i < 1000 && getline(tooo, temp); i++, a = "", b = "", c = "", d = "") {
+	for (int i = 0; i < 1000 && getline(tooo, temp); i++, a = "", b = "") {
 		stringstream stemp;
 		stemp << temp;
-		stemp >> a >> b >> c >> d; //读取行内容
+		stemp >> a >> b; //读取行内容
 		//空白数据“***”读取为空白字符串
 		if (a == "***") a = "";
 		if (b == "***") b = "";
-		if (c == "***") c = "";
-		if (d == "***") d = "";
 		if (!get_judge(i)) {
-			set_contact(i, a, b, c, d, true);
+			set_contact(i, a, b, "", "", true);
 		}
 	}
 }
@@ -271,7 +269,7 @@ void BookPhone::Save() {
 			//空白数据记录为“***”
 			if (a == "") a = "***";
 			if (b == "") b = "***";
-			tooo << a << " " << b << " *** ***\n";
+			tooo << a << " " << b << endl;
 		}
 	}
 }
