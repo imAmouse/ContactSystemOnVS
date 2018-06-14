@@ -1,8 +1,8 @@
 /*
- *         c++ 课程设计 ———— 通讯录系统
- *            start at 2018-05-05
- *     Designed By 空间信息与数字技术1班 官文豪
- */
+*         c++ 课程设计 ———— 通讯录系统
+*            start at 2018-05-05
+*     Designed By 空间信息与数字技术1班 官文豪
+*/
 
 #include <iostream>
 #include <fstream>
@@ -179,7 +179,7 @@ ostream& operator<<(ostream &cout, book &temp) {
 			else
 				cout << "\t" << temp.contact[i].get_num_qq() << "\t" << temp.contact[i].get_address() << "\t储存卡" << "\t" << i << endl;
 		}
-	return cout;
+		return cout;
 }
 book& book::operator+=(book &BeTrans) {
 	/*
@@ -207,6 +207,15 @@ book& book::operator+=(book &BeTrans) {
 	for (int i = 0; i < 1000; i++) {
 		int i1 = 0;
 		if (BeTrans.contact[i].get_judge()) {
+			//根据姓名判断是否数据重复
+			bool JudgeChongFu=false;
+			for(int i2=0;i2<1000;i2++){
+				if(BeTrans.get_contact(i,1)==contact[i2].get_name()){
+					JudgeChongFu=true;
+					break;
+				}
+			}
+			if(JudgeChongFu) continue;
 			for (; i1 < 1000; i1++) {
 				if (!contact[i1].get_judge()) {
 					contact[i1].set_name(BeTrans.get_contact(i, 1));
@@ -324,6 +333,7 @@ private:
 	void Trans(); //转存
 public:
 	Welcome();
+	~Welcome();
 	int StartDisplay(); //欢迎界面
 };
 Welcome::Welcome() {
@@ -332,6 +342,13 @@ Welcome::Welcome() {
 	p->Read();
 	p = &phone_card;
 	p->Read();
+}
+Welcome::~Welcome() {
+	//结束时自动保存
+	p = &phone_in;
+	p->Save();
+	p = &phone_card;
+	p->Save();
 }
 int Welcome::StartDisplay() { //欢迎界面
 	while (true) {
@@ -509,8 +526,10 @@ void Welcome::Trans() {
 	else if (num == 2) {
 		phone_in += phone_card;
 	}
-	else
+	else{
 		cout << "输入错误！请输入正确的序号！\n";
+		return;
+	}
 	cout << "转存成功！\n";
 	p = &phone_in;
 	p->Save();
@@ -525,5 +544,3 @@ int main() {
 	Welcome Display;
 	return Display.StartDisplay();
 }
-
-
