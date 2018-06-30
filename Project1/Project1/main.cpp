@@ -13,25 +13,11 @@
 
 using namespace std;
 
-//定义联系人类
-class person {
-private:
+//定义联系人
+struct person {
 	string name, num_phone, num_qq, address;
 	bool judge; //判断此数据是否有效，以便于增删、查找、浏览操作
-public:
-	person();
-	void set_name(string name) { this->name = name; }
-	void set_num_phone(string num_phone) { this->num_phone = num_phone; }
-	void set_num_qq(string num_qq) { this->num_qq = num_qq; }
-	void set_address(string address) { this->address = address; }
-	void set_judge(bool judge) { this->judge = judge; }
-	string get_name() { return name; }
-	string get_num_phone() { return num_phone; }
-	string get_num_qq() { return num_qq; }
-	string get_address() { return address; }
-	bool get_judge() { return judge; }
 };
-person::person() :judge(false) {}
 
 //定义电话本基类
 class book {
@@ -39,11 +25,12 @@ private:
 	bool weizhi; //false为电话内部，true为存储卡存储
 	person contact[1000]; //每个电话本最大容量为1000
 public:
-	void set_weizhi(bool weizhi) { this->weizhi = weizhi; }
+	book();
+	void set_weizhi(bool weizhi) { this->weizhi = weizhi; }//返回false为电话内部，true为存储卡存储
 	void set_contact(int Num, string Name, string PhoneNum, string QQNum, string Address, bool Judge); //设置联系人信息
 	string get_contact(int Num, int Choose); //获取联系人信息（Choose）：1.姓名 2.电话 3.QQ 4.地址
 	bool get_weizhi() { return weizhi; } //返回值false为电话内部，true为存储卡存储
-	bool get_judge(int Num) { return contact[Num].get_judge(); } //返回联系人空间是否被占用
+	bool get_judge(int Num) { return contact[Num].judge; } //返回联系人空间是否被占用
 	void add_person();
 	void delete_person(int num); //传入要删除的编号
 	void revise_person(int num); //修改
@@ -54,19 +41,23 @@ public:
 	virtual void Read() = 0;
 	virtual void Save() = 0;
 };
+book::book(){
+	for(int i=0;i<1000;i++)
+		contact[i].judge=false;
+}
 void book::set_contact(int Num, string Name, string PhoneNum, string QQNum, string Address, bool Judge) {
-	contact[Num].set_judge(Judge);
-	contact[Num].set_name(Name);
-	contact[Num].set_num_phone(PhoneNum);
-	contact[Num].set_num_qq(QQNum);
-	contact[Num].set_address(Address);
+	contact[Num].judge=Judge;
+	contact[Num].name=Name;
+	contact[Num].num_phone=PhoneNum;
+	contact[Num].num_qq=QQNum;
+	contact[Num].address=Address;
 }
 string book::get_contact(int Num, int Choose) {
 	switch (Choose) {
-	case 1:return contact[Num].get_name();
-	case 2:return contact[Num].get_num_phone();
-	case 3:return contact[Num].get_num_qq();
-	case 4:return contact[Num].get_address();
+	case 1:return contact[Num].name;
+	case 2:return contact[Num].num_phone;
+	case 3:return contact[Num].num_qq;
+	case 4:return contact[Num].address;
 	default:return "";
 	}
 }
@@ -74,7 +65,7 @@ void book::add_person() {
 	int num;
 	//查找未被记录的项，若不存在，cout错误并返回
 	for (num = 0; num < 1000; num++) {
-		if (!contact[num].get_judge()) {
+		if (!contact[num].judge) {
 			break;
 		}
 		else if (num == 999) {
@@ -85,14 +76,14 @@ void book::add_person() {
 	string temp;
 	cout << "请输入联系人姓名：\n";
 	cin >> temp;
-	contact[num].set_name(temp);
-	contact[num].set_judge(true);
+	contact[num].name=temp;
+	contact[num].judge=true;
 	cout << "是否记录电话号码？(Y/N)";
 	cin >> temp;
 	if (temp == "Y" || temp == "y") {
 		cout << "请输入：";
 		cin >> temp;
-		contact[num].set_num_phone(temp);
+		contact[num].num_phone=temp;
 	}
 	if (weizhi) { //判断位置，手机只记录姓名和电话号
 		cout << "是否记录QQ号码？(Y/N)";
@@ -100,24 +91,24 @@ void book::add_person() {
 		if (temp == "Y" || temp == "y") {
 			cout << "请输入：";
 			cin >> temp;
-			contact[num].set_num_qq(temp);
+			contact[num].num_qq=temp;
 		}
 		cout << "是否记录联系人地址？(Y/N)";
 		cin >> temp;
 		if (temp == "Y" || temp == "y") {
 			cout << "请输入：";
 			cin >> temp;
-			contact[num].set_address(temp);
+			contact[num].address=temp;
 		}
 	}
 	cout << "添加成功！\n";
 }
 void book::delete_person(int num) {
-	contact[num].set_judge(false);
-	contact[num].set_name("");
-	contact[num].set_num_phone("");
-	contact[num].set_num_qq("");
-	contact[num].set_address("");
+	contact[num].judge=false;
+	contact[num].name="";
+	contact[num].num_phone="";
+	contact[num].num_qq="";
+	contact[num].address="";
 }
 void book::revise_person(int num) {
 	string temp;
@@ -126,14 +117,14 @@ void book::revise_person(int num) {
 	if (temp == "Y" || temp == "y") {
 		cout << "请输入联系人姓名：\n";
 		cin >> temp;
-		contact[num].set_name(temp);
+		contact[num].name=temp;
 	}
 	cout << "是否修改电话号码？(Y/N)";
 	cin >> temp;
 	if (temp == "Y" || temp == "y") {
 		cout << "请输入：";
 		cin >> temp;
-		contact[num].set_num_phone(temp);
+		contact[num].num_phone=temp;
 	}
 	if (weizhi) { //判断位置，手机只记录姓名和电话号
 		cout << "是否修改QQ号码？(Y/N)";
@@ -141,14 +132,14 @@ void book::revise_person(int num) {
 		if (temp == "Y" || temp == "y") {
 			cout << "请输入：";
 			cin >> temp;
-			contact[num].set_num_qq(temp);
+			contact[num].num_qq=temp;
 		}
 		cout << "是否修改联系人地址？(Y/N)";
 		cin >> temp;
 		if (temp == "Y" || temp == "y") {
 			cout << "请输入：";
 			cin >> temp;
-			contact[num].set_address(temp);
+			contact[num].address=temp;
 		}
 	}
 	cout << "修改成功！\n";
@@ -158,12 +149,12 @@ void book::find_person(string name, bool IfDel = false) {
 	*/
 	for (int i = 0; i < 1000; i++) {
 		if (get_contact(i, 1).find(name) != string::npos || get_contact(i, 2).find(name) != string::npos || get_contact(i, 3).find(name) != string::npos || get_contact(i, 4).find(name) != string::npos) {
-			cout << get_contact(i, 1) << "\t" << contact[i].get_num_phone();
+			cout << get_contact(i, 1) << "\t" << contact[i].num_phone;
 			if (IfDel == false) {
 				if (!weizhi) //手机只记录姓名 电话，QQ和地址输出为“\\\\\\”
 					cout << "\t\\\\\\\\\\\\\t\\\\\\\\\\\\\t手机" << "\t" << i << "\n";
 				if (weizhi)
-					cout << "\t" << contact[i].get_num_qq() << "\t" << contact[i].get_address() << "\t储存卡" << "\t" << i << "\n";
+					cout << "\t" << contact[i].num_qq << "\t" << contact[i].address << "\t储存卡" << "\t" << i << "\n";
 			}
 			else if (IfDel == true)
 				delete_person(i);
@@ -172,12 +163,12 @@ void book::find_person(string name, bool IfDel = false) {
 }
 ostream& operator<<(ostream &cout, book &temp) {
 	for (int i = 0; i < 1000; i++)
-		if (temp.contact[i].get_judge() == true) {
-			cout << temp.get_contact(i, 1) << "\t" << temp.contact[i].get_num_phone();
+		if (temp.contact[i].judge == true) {
+			cout << temp.get_contact(i, 1) << "\t" << temp.contact[i].num_phone;
 			if (!temp.get_weizhi())
 				cout << "\t" << "\\\\\\\\\\\\" << "\t" << "\\\\\\\\\\\\" << "\t手机" << "\t" << i << endl;
 			else
-				cout << "\t" << temp.contact[i].get_num_qq() << "\t" << temp.contact[i].get_address() << "\t储存卡" << "\t" << i << endl;
+				cout << "\t" << temp.contact[i].num_qq << "\t" << temp.contact[i].address << "\t储存卡" << "\t" << i << endl;
 		}
 		return cout;
 }
@@ -190,9 +181,9 @@ book& book::operator+=(book &BeTrans) {
 	int BeTransNum = 0, TransToNum = 0;
 	//计算 BeTransNum已有联系人数 和 TransToNum可记录联系人数
 	for (int i = 0; i < 1000; i++) {
-		if (BeTrans.contact[i].get_judge())
+		if (BeTrans.contact[i].judge)
 			BeTransNum++;
-		if (!contact[i].get_judge())
+		if (!contact[i].judge)
 			TransToNum++;
 	}
 	//检查容量是否受限
@@ -206,23 +197,23 @@ book& book::operator+=(book &BeTrans) {
 	//转存
 	for (int i = 0; i < 1000; i++) {
 		int i1 = 0;
-		if (BeTrans.contact[i].get_judge()) {
+		if (BeTrans.contact[i].judge) {
 			//根据姓名判断是否数据重复
 			bool JudgeChongFu=false;
 			for(int i2=0;i2<1000;i2++){
-				if(BeTrans.get_contact(i,1)==contact[i2].get_name()){
+				if(BeTrans.get_contact(i,1)==contact[i2].name){
 					JudgeChongFu=true;
 					break;
 				}
 			}
 			if(JudgeChongFu) continue;
 			for (; i1 < 1000; i1++) {
-				if (!contact[i1].get_judge()) {
-					contact[i1].set_name(BeTrans.get_contact(i, 1));
-					contact[i1].set_address(BeTrans.contact[i].get_address());
-					contact[i1].set_num_qq(BeTrans.contact[i].get_num_qq());
-					contact[i1].set_num_phone(BeTrans.contact[i].get_num_phone());
-					contact[i1].set_judge(true);
+				if (!contact[i1].judge) {
+					contact[i1].name=BeTrans.get_contact(i, 1);
+					contact[i1].address=BeTrans.contact[i].address;
+					contact[i1].num_qq=BeTrans.contact[i].num_qq;
+					contact[i1].num_phone=BeTrans.contact[i].num_phone;
+					contact[i1].judge=true;
 					break;
 				}
 			}
