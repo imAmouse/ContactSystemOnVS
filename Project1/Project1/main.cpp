@@ -9,7 +9,6 @@
 #include <string>
 #include <iomanip>
 #include <cstdlib>
-#include <sstream>
 
 using namespace std;
 
@@ -236,12 +235,9 @@ public:
 	void Save();
 };
 void BookPhone::Read() {
-	string a, b, temp;
+	string a, b;
 	fstream tooo(GetFileName().c_str(), ios::in);
-	for (int i = 0; i < 1000 && getline(tooo, temp); i++, a = "", b = "") {
-		stringstream stemp;
-		stemp << temp;
-		stemp >> a >> b; //读取行内容
+	for (int i = 0; i < 1000 && tooo>>a>>b; i++, a = "", b = "") {
 		//空白数据“***”读取为空白字符串
 		if (a == "***") a = "";
 		if (b == "***") b = "";
@@ -273,12 +269,9 @@ public:
 	void Save();
 };
 void BookCard::Read() {
-	string a, b, c, d, temp;
+	string a, b, c, d;
 	fstream tooo(GetFileName().c_str(), ios::in);
-	for (int i = 0; i < 1000 && getline(tooo, temp); i++, a = "", b = "", c = "", d = "") {
-		stringstream stemp;
-		stemp << temp;
-		stemp >> a >> b >> c >> d; //读取行内容
+	for (int i = 0; i < 1000 && tooo>>a>>b>>c>>d; i++, a = "", b = "", c = "", d = "") {
 		//空白数据“***”读取为空白字符串
 		if (a == "***") a = "";
 		if (b == "***") b = "";
@@ -357,22 +350,22 @@ int Welcome::StartDisplay() { //欢迎界面
 		cout << setw(45) << "*" << "*\n";
 		cout << setw(46) << "*" << cout.fill('*') << endl;
 		cout << "输入序号进行操作：";
-		int num;
+		char num;
 		cin >> num;
 		switch (num) {
-		case 1: //添加联系人
+		case '1': //添加联系人
 			Add(); break;
-		case 2: //删除联系人
+		case '2': //删除联系人
 			Del(); break;
-		case 3: //查找联系人
+		case '3': //查找联系人
 			Find(); break;
-		case 4: //修改联系人
+		case '4': //修改联系人
 			Revice(); break;
-		case 5: //浏览已存储联系人
+		case '5': //浏览已存储联系人
 			LookThough(); break;
-		case 6: //联系人转存
+		case '6': //联系人转存
 			Trans(); break;
-		case 9: //退出系统
+		case '9': //退出系统
 			return 0;
 		default:
 			cout << "错误！请输入正确的号码！\n";
